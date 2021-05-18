@@ -1,10 +1,9 @@
-baseURL = "https://example.com"
+#baseURL = "https://example.com"
+baseURL = "https://affans.github.io/personal"
 title = "Affan Shoukat"
 theme = "m10c"
 languageCode = "en"
 enableInlineShortcodes = true
-
-myHeader = "Latest Posts"
 
 summarylength = 10
 enableEmoji = true

@@ -1,0 +1,76 @@
+languageCode = "en"
+DefaultContentLanguage = "en"
+title = "Website of Jane Doe"
+theme = "anatole"
+summarylength = 10
+enableEmoji = true
+enableRobotsTXT = true
+
+# Syntax highlighting
+pygmentsUseClasses = true
+pygmentsCodeFences = true
+pygmentsCodefencesGuessSyntax = true
+
+[params]
+title = "Affan Shoukat"
+author = "Jane Doe"
+#copyright = "2020-2021"
+description = "Personal and Academic"
+profilePicture = "images/profile.jpg"
+keywords = ""
+favicon = "favicons/"
+# example ["css/custom.css"]
+customCss = []
+# example ["js/custom.js"]
+customJs = [] 
+mainSections = ["post"]
+# if mainSections = [], _index.md is rendered without post listings. Put any content into the _index.md file located in the content directory. If you want, you can also have some static text and the posts below. In such case, simply keep the mainSections = ["post"] and put any static content in the _index.md.
+images = ["images/site-feature-image.png"]
+doNotLoadAnimations = false
+# Form Spree Contact Form
+#contactFormAction = "https://formspree.io/f/your-form-hash-here"
+# Google Site Verify
+#googleSiteVerify = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+# indexDateFormat = "Mon, Jan 2, 2006"
+# listDateFormat = "Jan 2"
+# singleDateFormat = "Mon, Jan 2, 2006"
+# Commento Comments
+# CommentoURL = "https://commento.example.com/js/commento.js"
+# Read More links for truncated summaries
+# readMore = true
+
+
+[params.simpleAnalytics]
+# enable = true
+# customurl = "https://analytics.example.com"
+
+## Math settings
+[params.math]
+enable = true  # options: true, false. Enable math support globally, default: false. You can always enable math on per page.
+use = "katex"  # options: "katex", "mathjax". default is "katex".
+
+[menu]
+
+  [[menu.main]]
+  name = "Home"
+  identifier = "home"
+  weight = 100
+  url = "/"
+
+  [[menu.main]]
+  name = "Posts"
+  weight = 200
+  identifier = "posts"
+  url = "/post/"
+
+  [[menu.main]]
+  name = "About"
+  weight = 300
+  identifier = "about"
+  url = "/about/"
+
+  [[menu.main]]
+  name = "Contact"
+  weight = 400
+  identifier = "contact"
+  url = "/contact/"

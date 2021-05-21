@@ -1,10 +1,8 @@
 ---
-title: "A brief introduction to Artificial Neural Networks"
+title: "Artificial Neural Networks For Applied Mathematicians"
 date: 2021-05-09
 draft: false
 ---
-I wrote this brief article to describe the basics of an artificial neural network.
-
 Consider a neural network with $L$ layers, defined by a mapping $\mathbb{R}^{n_1} \rightarrow \mathbb{R}^{n_L}$ where $n_1$ and $n_L$ are the dimensions of the initial input and final output. Let $W^{[l]} \in \mathbb{R}^{n_l \times n_{l - 1}}$ denote the matrix of weights at layer $l$. Similarly, let $b^{[l]} \in \mathbb{R}^{n_l}$ be the vector of biases for layer $l$.  Given an input $x \in \mathbb{R}^{n_1}$, the neural network can then be succinctly described by   
 $$
 \begin{align}

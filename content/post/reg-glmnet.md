@@ -1,9 +1,9 @@
 ---
-title: "Regularization in Machine Learning"
+title: "Regularization Techniques in Regression Models"
 date: 2021-05-16
 draft: false
 ---
-What is *regularization* in machine learning algorithms? Regularization is a modification to a learning algorithm that aims to reduce its generalization error by not its training error. This technique is often used for very high-dimensional data in which the number of features (or predictors, explanatory variables) exceeds the sample sample size. 
+What is *regularization* in regression models? Regularization is a modification to a learning algorithm that aims to reduce its generalization error by not its training error. This technique is often used for very high-dimensional data in which the number of features (or predictors, explanatory variables) exceeds the sample sample size. 
 
 ## Prerequisites and Context
 Our context for this post is linear regression where the target variable $y$ is explained by $n$ features $X = (x_1, x_2, \ldots, x_n)$, with corresponding coefficients $\beta = (\beta_1, \beta_2, \ldots, \beta_n)$. Recall the cost function (with respect to $\beta$) of the linear regression algorithm is given by $\Vert y - X\beta \Vert_2^2$ over $N$ data points. Regression by OLS then estimates the coefficients $\beta$ (and the intercept) by minimizing the squared prediction errors across the training data. To increase model accuracy, one tries to fit as many datapoints by moving the model from linear to quadratic to polynomial. However, as model complexity grows, higher degree model and large coefficients increase the variance significantly leading to overfitting.
@@ -25,28 +25,89 @@ Sometimes geometry helps. Consider an example with two coefficients, say $\beta 
 
 In this figure, the black circle are the constraint regions $\beta_1^2 + \beta_2^2 < t$ for some $t$ and the colored circles are the contours of the errors from the Gradient Descent. The additional bias term wants to pull the values of $\beta_1, \beta_2$ somewhere on black circle, while gradient descent is trying to travel to the global minimum represented by the dot. This balancing act eventually settles on the intersection indicated by the red cross. 
 
-
 The Lasso Regression is similar, except it penalizes the size of the $L_1$ norm of the cofficients, that is 
-$$\hat{\beta}(\lambda) = \operatorname*{argmin}_\beta \Vert y - X\beta \Vert_2^2 + \lambda \Vert\beta\Vert_1$$ where, again, $\lambda$ is a positive tuning parameter. The fundamental difference between Ridge and Lasso is that the $L_1$ norm constraint yields a sparse solution. By assigning zero coefficients to a subset of variables, the Lasso provices automatic feature selection, where the regularization parameter $\lambda$ controls the feature selection. 
-
-From a geometric view, we have 
+$$\hat{\beta}(\lambda) = \operatorname*{argmin}_\beta \Vert y - X\beta \Vert_2^2 + \lambda \Vert\beta\Vert_1$$ where, again, $\lambda$ is a positive tuning parameter. From a geometric view, we have 
 
 ![l1 norm](/images/lasso_l1_norm.png)
 
-
-Why do L1 norms achieve sparse solutions? See this Math.ME post (https://stats.stackexchange.com/questions/45643/why-l1-norm-for-sparse-models).
-
+The fundamental difference between Ridge and Lasso is that the $L_1$ norm constraint yields a [sparse solution](https://stats.stackexchange.com/questions/45643/why-l1-norm-for-sparse-models). In other words, the point of intersection between $L_1$ norm and the gradient descent contour to converge near the axes, and thus assigning the coefficient value to zero. By assigning zero coefficients to a subset of variables, the Lasso provices automatic feature selection, where the regularization parameter $\lambda$ controls the feature selection. 
 
 
-Stable and accurate regression/classification model will require some sort of penalization on the L1 or the L2 norm of the coefficients. 
-This L1/L2 "regularization" brings in many technical advantages. 
+## Code Sample 
+Here is sample code to run Lasso Regression in Julia, using the package `GLMNet`. 
 
- 
- The simplest non-mathematical explanation is that For L2: Penalty term is squared,so squaring a small value will make it smaller. We don't have to make it zero to achieve our aim to get minimum square error, we will get it before that. For L1: Penalty term is absolute,we might need to go to zero as there are no catalyst to make small smaller.
+```julia
+# replicates the R-GLM analysis from https://bmcmedresmethodol.biomedcentral.com/articles/10.1186/s12874-019-0681-4
+using Flux
+using Gnuplot
+using GLMNet
+using CSV
+using DataFrames
+using PrettyTables
+using Random
+using LinearAlgebra
+
+_data = DataFrame(CSV.File("regularized_glm_data.csv")) 
+filter!(r -> r.bare_nuclei != "NA", _data) 
+_data.bare_nuclei = parse.(Int64, _data.bare_nuclei)
+_data |> pretty_table
+
+# sampling the test/training set 
+index = 1:nrow(_data) 
+testindex = rand(index, Int64(trunc(length(index)/3)))
+testdf = _data[testindex, :]
+traindf = _data[Not(testindex), :] 
+println("testdf: $(nrow(testdf)) traindf: $(nrow(traindf))")
+
+# using the training data, set up vectors for glmnet
+y = map(x -> x == 2 ? 0 : 1, traindf[:, :class]) # convert outcmoe variable to 0/1
+X = Matrix(traindf[:, 3:11])
+path = glmnet(X, y)
+
+path.a0 # intercept values
+path.betas # coefficient values
+
+# for each solution (i.e. for each lambda value), sum up the coefficient values for all 9 predictors 
+# why plot against the maximum?
+betaNorm = [norm(x, 1) for x in eachslice(path.betas,dims=2)] # norm(_, 1) is sum
+
+#@gp "reset session"
+@gp "reset"
+@gp :- "set xlabel 'maximum beta (coefficient) for each predictor'"
+@gp :- "set ylabel 'beta value over each parameter value'"
+for p in 1:9 
+@gp :- betaNorm path.betas'[:, p] "title 'var: $p' with lines" :-
+end
+@gp
+
+# To predict the output for each model along the path for a given set of predictors
+yt = map(x -> x == 2 ? 0 : 1, testdf[:, :class]) # convert outcmoe variable to 0/1
+Xt = Matrix(testdf[:, 3:11])
+predict(path, Xt)
+
+# here each row represents the final output of the regression over all the lambda values 
+# for row[1] with 56 columns means the output of y = ax1 + ax2 + ... where each value is a continous version of y 
+# and we have 56 such guesses over the 56 lambda values 
+# which lambda value is best? (i.e. which row to pick)
+
+# use the training set to do n-fold cross-validation. 
+cv = glmnetcv(X, y)
+minloss_idx = argmin(cv.meanloss)
+coef(cv) # equivalent to cv.path.betas[:, minloss_idx]
+
+# now we know what lambda is best, pick that lambda and see the prediction accuracy on the testset
+yht = round.(predict(path, Xt, outtype = :prob), digits=3);
+yht[:, minloss_idx] # get the prediction from the lambda parameter that is minimized
+
+# or alternatively, just predict using the cross fold result... they are equivalent. 
+yht = round.(predict(cv, Xt, outtype = :prob), digits=4)
+
+# Compare against the actual y values 
+DataFrame(target=yt, predict=yht) |> pretty_table
+
+```
 
 
-
-Underfitting = High Bias
-Overfitting = High Variance
-Higher degree model and large coefficients increase the variance significantly leading to Overfitting
+### Reference
+The Elements of Statistical Learning by Trevor Hastie, Rob Tibshirani, Jerome Friedman. Link: https://web.stanford.edu/~hastie/ElemStatLearn/
 

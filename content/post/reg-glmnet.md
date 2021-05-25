@@ -107,6 +107,9 @@ DataFrame(target=yt, predict=yht) |> pretty_table
 
 ```
 
+## Other norms?
+While regularization is often with $L_1$ or $L_2$ norms, it could be done with other norms as well. For example, one may use $L_0$  which which simply counts the number of nonzero components of a vector (but actually isn't strictly a norm in the mathematical sense). However, this is not common. See answers and comments on [this](https://stats.stackexchange.com/questions/269298/why-do-we-only-see-l-1-and-l-2-regularization-but-not-other-norms/269407)
+
 
 ### Reference
 The Elements of Statistical Learning by Trevor Hastie, Rob Tibshirani, Jerome Friedman. Link: https://web.stanford.edu/~hastie/ElemStatLearn/

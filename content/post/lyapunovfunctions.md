@@ -3,8 +3,9 @@ title: "A Brief Exposition of Lyapunov Functions"
 date: 2021-05-23
 draft: true
 ---
-https://www.ndsu.edu/pubweb/~novozhil/Teaching/480%20Data/13.pdf
+ <!-- https://www.ndsu.edu/pubweb/~novozhil/Teaching/480%20Data/13.pdf
 https://stanford.edu/class/ee363/lectures/lyap.pdf
+https://www.math24.net/method-lyapunov-functions -->
 
 For a homogeneous dynamical system $$\mathbf{x}^{\prime} = f(\mathbf{x})\quad \text{  or  }\quad \frac{dx_i}{dt} = f_i(x_1, x_2, \ldots, x_n) \quad i = 1, 2, \ldots, n$$a point $\mathbf{x_e}$ is an equilibrium point if $\mathbf{f}(\mathbf{x_e}) = 0$. The system is said to be globally asymptotically stable if **every** trajectory $\mathbf{x}(t) \rightarrow \mathbf{x_e}$ as $t \rightarrow \infty$ or locally asymptotically stable near or at $\mathbf{x_e}$ if there exists $R > 0$ s.t. $\lVert \mathbf{x}(0) - \mathbf{x_e} \rVert \leq R \Rightarrow x(t) \rightarrow \mathbf{x_e}$ as $t \rightarrow \infty$. When $f$ is nonlinear, establishing stability is often difficult, but possible if the system is hyperbolic (or in other words all of the eigenvalues of the Jacobian have no real parts). This is called linearization, however has the drawback that it is essentially a local method. 
 

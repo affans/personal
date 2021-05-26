@@ -1,7 +1,7 @@
 ---
 title: "A Brief Exposition of Lyapunov Functions"
 date: 2021-05-23
-draft: true
+draft: false
 ---
  <!-- https://www.ndsu.edu/pubweb/~novozhil/Teaching/480%20Data/13.pdf
 https://stanford.edu/class/ee363/lectures/lyap.pdf
